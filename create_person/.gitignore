@@ -1,0 +1,6 @@
+venv/
+.env
+
+# __pycache__ en cualquier carpeta
+__pycache__/
+**/__pycache__/

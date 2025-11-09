@@ -1,0 +1,46 @@
+version: "3"
+services: 
+  mysql:
+    container_name: mysql
+    build: ./mysql/
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/db:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+    env_file:
+      - ./mysql/.env
+    networks:
+      - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  create_person:
+    depends_on:
+      - mysql
+    container_name: create_person
+    build: ./create_person/
+    restart: unless-stopped
+    volumes:
+      - ./create_person:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./create_person/.env
+    networks:
+      - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge

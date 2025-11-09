@@ -1,9 +1,16 @@
+import datetime
+import requests
+import os
 from sqlalchemy.orm import Session
 from models.person_model import Person
 from schemas.person_schema import PersonRequest
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException, status
 from utils.validate import validate_person_data
+
+LOGS_SERVICE_URL = os.getenv(
+    "LOGS_SERVICE_URL",
+)
 
 
 def create_person(db: Session, data: PersonRequest):
@@ -49,7 +56,23 @@ def create_person(db: Session, data: PersonRequest):
         db.add(new_person)
         db.commit()
         db.refresh(new_person)
+
+        log_data = {
+            "document_type": new_person.document_type,
+            "document_number": new_person.document_number,
+            "log_type": "Create Person",
+            "description": f"Se creó una nueva persona: {new_person.first_name} {new_person.last_name}",
+            "log_date": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        }
+        try:
+            response = requests.post(LOGS_SERVICE_URL, json=log_data, timeout=5)
+            response.raise_for_status()
+            print(f"[INFO] Log registrado: {response.status_code}")
+        except requests.RequestException as e:
+            print(f"[WARN] No se pudo registrar el log: {e}")
+
         return new_person
+
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(

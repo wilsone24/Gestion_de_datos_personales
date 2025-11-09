@@ -3,7 +3,6 @@ from models.person_model import Person
 from schemas.person_schema import PersonRequest
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException, status
-from datetime import datetime
 from utils.validate import validate_person_data
 
 
@@ -13,7 +12,7 @@ def create_person(db: Session, data: PersonRequest):
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(e),
+            detail=[{"msg": str(e)}],
         )
 
     existing_person = (

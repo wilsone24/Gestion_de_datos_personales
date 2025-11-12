@@ -37,7 +37,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-        
+
   create_person:
     depends_on:
       - mysql
@@ -72,6 +72,27 @@ services:
       - "8002:8002"
     env_file:
       - ./delete_person/.env
+    networks:
+      - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  get_person:
+    depends_on:
+      - mysql
+      - log_service
+    container_name: get_person
+    build: ./get_person/
+    restart: unless-stopped
+    volumes:
+      - ./get_person:/app
+    ports:
+      - "8004:8004"
+    env_file:
+      - ./get_person/.env
     networks:
       - app-network
     logging:

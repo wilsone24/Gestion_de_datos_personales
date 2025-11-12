@@ -6,6 +6,6 @@ from controllers.person_controller import delete_person_controller
 router = APIRouter()
 
 
-@router.delete("/delete/{id_person}")
+@router.delete("/delete/{person_id}")
 def delete_person(person_id: int, db: Session = Depends(get_db)):
     return delete_person_controller(db, person_id)

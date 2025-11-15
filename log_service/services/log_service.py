@@ -25,3 +25,21 @@ def create_log(db: Session, data: LogRequest):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al guardar el log: {str(e)}",
         )
+
+
+def get_logs(db: Session, document_type: str, document_number: str):
+    try:
+        logs = (
+            db.query(Log)
+            .filter(
+                Log.document_type == document_type,
+                Log.document_number == document_number,
+            )
+            .all()
+        )
+        return logs
+    except SQLAlchemyError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al obtener los logs: {str(e)}",
+        )

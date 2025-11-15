@@ -27,7 +27,7 @@ def create_log(db: Session, data: LogRequest):
         )
 
 
-def get_logs(db: Session, document_type: str, document_number: str):
+def get_logs_document(db: Session, document_type: str, document_number: str):
     try:
         logs = (
             db.query(Log)
@@ -42,4 +42,15 @@ def get_logs(db: Session, document_type: str, document_number: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al obtener los logs: {str(e)}",
+        )
+
+
+def get_logs_date(db: Session, date: str):
+    try:
+        logs = db.query(Log).filter(Log.log_date.startswith(date)).all()
+        return logs
+    except SQLAlchemyError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al obtener los logs por fecha: {str(e)}",
         )

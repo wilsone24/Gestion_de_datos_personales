@@ -14,4 +14,4 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(log_routes.router, prefix="/createlogs", tags=["logs"])
+app.include_router(log_routes.router, prefix="/logs", tags=["logs"])

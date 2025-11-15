@@ -59,6 +59,28 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  config_service:
+    depends_on:
+      - mysql
+      - log_service
+    container_name: config_service
+    build: ./config_service/
+    restart: unless-stopped
+    volumes:
+      - ./config_service:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8005:8005"
+    env_file:
+      - ./config_service/.env
+    networks:
+      - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   delete_person:
     depends_on:
       - mysql

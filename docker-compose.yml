@@ -81,6 +81,27 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  rag_service:
+    depends_on:
+      - mysql
+      - log_service
+    container_name: rag_service
+    build: ./rag_service/
+    restart: unless-stopped
+    volumes:
+      - ./rag_service:/app
+    ports:
+      - "8006:8006"
+    env_file:
+      - ./rag_service/.env
+    networks:
+      - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   delete_person:
     depends_on:
       - mysql

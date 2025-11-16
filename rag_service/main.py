@@ -6,15 +6,7 @@ from routes import rag_routes
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    db: Session = next(get_db())
-    ingest_data(db)
-    yield
-
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,

@@ -1,4 +1,4 @@
-import os
+import os, shutil
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
@@ -16,15 +16,13 @@ def get_vector_store():
 
 
 def clear_vector_store():
-    store = get_vector_store()
-    store.delete_all()
-    store.persist()
+    if os.path.exists(VECTOR_DB_PATH):
+        shutil.rmtree(VECTOR_DB_PATH)
 
 
 def add_texts_to_vector_store(texts, metadatas):
     store = get_vector_store()
     store.add_texts(texts=texts, metadatas=metadatas)
-    store.persist()
 
 
 def query_vector_store(question, k=3):

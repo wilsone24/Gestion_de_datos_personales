@@ -9,6 +9,7 @@ from utils.rag_functions import (
     clear_vector_store,
 )
 from sqlalchemy.orm import Session
+from models.person_model import Person
 
 
 def get_response(data: QuerySchema):
@@ -45,8 +46,7 @@ def update_vector_store(data: PersonResponse):
 
 
 def ingest_data(db: Session):
-    query = text("SELECT * FROM persons")
-    rows = db.execute(query).fetchall()
+    rows = db.query(Person).all()
     if not rows:
         raise HTTPException(status_code=404, detail="No hay datos en la tabla persons")
     clear_vector_store()

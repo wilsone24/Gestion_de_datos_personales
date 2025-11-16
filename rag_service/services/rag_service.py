@@ -48,11 +48,12 @@ def ingest_data(db: Session):
     rows = db.query(Person).all()
     if not rows:
         raise HTTPException(status_code=404, detail="No hay datos en la tabla persons")
+
     clear_vector_store()
-    texts = []
-    metadatas = []
+
+    all_text = ""
     for row in rows:
-        text_to_embed = (
+        all_text += (
             f"id_person (int): {row.id_person}\n"
             f"document_type (str): {row.document_type}\n"
             f"document_number (str): {row.document_number}\n"
@@ -63,16 +64,19 @@ def ingest_data(db: Session):
             f"gender (str): {row.gender}\n"
             f"email (str): {row.email}\n"
             f"phone_number (str): {row.phone_number}\n"
-            f"photo_url (str|None): {row.photo_url}"
+            f"photo_url (str|None): {row.photo_url}\n"
+            "----------------------------------------\n"
         )
-        metadata = {
-            "id_person": row.id_person,
-            "full_name": f"{row.first_name} {row.second_name or ''} {row.last_name}".strip(),
-            "document_type": row.document_type,
-            "document_number": row.document_number,
-        }
 
-        texts.append(text_to_embed)
-        metadatas.append(metadata)
-    add_texts_to_vector_store(texts, metadatas)
-    return {"message": "Vector store actualizado correctamente", "cantidad": len(texts)}
+    # Metadata general del documento
+    metadata = {
+        "total_persons": len(rows),
+        "description": "Información de todos los usuarios concatenada en un solo documento",
+    }
+
+    add_texts_to_vector_store([all_text], [metadata])
+
+    return {
+        "message": "Vector store actualizado correctamente con un solo documento",
+        "cantidad": len(rows),
+    }

@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from sqlalchemy import text
 from schemas.rag_schema import QuerySchema
 from schemas.person_schema import PersonResponse
 from utils.rag_functions import (

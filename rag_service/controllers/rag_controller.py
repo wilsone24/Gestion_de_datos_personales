@@ -1,6 +1,6 @@
 from requests import Session
-from schemas.rag_schemas import QuerySchema, UpdateVectorSchema
-from rags_service.services import rag_service
+from schemas.rag_schema import QuerySchema, UpdateVectorSchema
+from services import rag_service
 
 
 def get_response_controller(data: QuerySchema):

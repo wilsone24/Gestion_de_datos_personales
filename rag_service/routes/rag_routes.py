@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from rags_service.controllers.rag_controller import (
+from controllers.rag_controller import (
     get_response_controller,
     update_vector_store_controller,
     ingest_data_controller,

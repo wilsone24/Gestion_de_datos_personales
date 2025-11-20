@@ -12,7 +12,6 @@ def create_log(db: Session, data: LogRequest):
         log_type=data.log_type,
         description=data.description,
         log_date=data.log_date,
-        log_user=data.log_user,
     )
 
     try:

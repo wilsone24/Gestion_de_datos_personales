@@ -67,7 +67,6 @@ def create_person(db: Session, data: PersonRequest, photo: UploadFile | None):
             "log_type": "Create Person",
             "description": f"Se creó una nueva persona: {new_person.first_name} {new_person.last_name}",
             "log_date": (datetime.now(timezone.utc) - timedelta(hours=5)).isoformat(),
-            "log_user": "Prueba",
         }
         print(f"[INFO] Enviando log: {log_data}")
         try:

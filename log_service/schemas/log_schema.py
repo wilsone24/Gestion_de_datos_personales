@@ -8,7 +8,6 @@ class LogBase(BaseModel):
     log_type: str
     description: str
     log_date: datetime
-    log_user: str
 
 
 class LogRequest(LogBase): ...

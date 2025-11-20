@@ -8,6 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException, status, UploadFile
 from utils.validate import validate_person_data
 from utils.load_photo import process_photo
+from datetime import timedelta, datetime, timezone
 
 LOGS_SERVICE_URL = os.getenv(
     "LOGS_SERVICE_URL",
@@ -65,8 +66,9 @@ def create_person(db: Session, data: PersonRequest, photo: UploadFile | None):
             "document_number": new_person.document_number,
             "log_type": "Create Person",
             "description": f"Se creó una nueva persona: {new_person.first_name} {new_person.last_name}",
-            "log_date": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "log_date": (datetime.now(timezone.utc) - timedelta(hours=5)).isoformat(),
         }
+        print(f"[INFO] Enviando log: {log_data}")
         try:
             response = requests.post(LOGS_SERVICE_URL, json=log_data, timeout=5)
             response.raise_for_status()

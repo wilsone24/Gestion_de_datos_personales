@@ -1,8 +1,6 @@
 from schemas.config_schema import ConfigRequest
 from fastapi import HTTPException, status
 import docker
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
 from utils.log_helper import send_log
 
 client = docker.from_env()

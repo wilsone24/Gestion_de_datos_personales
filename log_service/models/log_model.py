@@ -11,3 +11,4 @@ class Log(Base):
     log_type = Column(String(50), nullable=False)
     description = Column(String(255), nullable=False)
     log_date = Column(DateTime, nullable=False)
+    log_user = Column(String(100), nullable=False)

@@ -6,5 +6,5 @@ def get_person_controller(db: Session, data: str):
     return person_service.get_person(db, data)
 
 
-def get_allp_persons_controller(db: Session):
+def get_all_persons_controller(db: Session):
     return person_service.get_all_persons(db)

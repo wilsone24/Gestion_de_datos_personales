@@ -4,13 +4,11 @@ import os
 from sqlalchemy.orm import Session
 from models.person_model import Person
 from fastapi import HTTPException, status
+from datetime import timedelta, datetime, timezone
 
 LOGS_SERVICE_URL = os.getenv(
     "LOGS_SERVICE_URL",
 )
-
-
-
 
 
 def get_all_persons(db: Session):
@@ -27,7 +25,8 @@ def get_all_persons(db: Session):
         "document_number": "ALL",
         "log_type": "Get All Persons",
         "description": f"Se consultaron todas las personas registradas. Total: {len(persons)}",
-        "log_date": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "log_date": (datetime.now(timezone.utc) - timedelta(hours=5)).isoformat(),
+        "log_user": "system",
     }
 
     try:
@@ -38,7 +37,6 @@ def get_all_persons(db: Session):
         print(f"[WARN] No se pudo registrar el log: {e}")
 
     return persons
-
 
 
 def get_person(db: Session, document_number: str):
@@ -55,7 +53,8 @@ def get_person(db: Session, document_number: str):
         "document_number": person.document_number,
         "log_type": "Get Person",
         "description": f"Se consultó una persona: {person.first_name} {person.last_name}",
-        "log_date": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "log_date": (datetime.now(timezone.utc) - timedelta(hours=5)).isoformat(),
+        "log_user": "system",
     }
 
     try:

@@ -1,47 +1,32 @@
-import os, shutil
 from dotenv import load_dotenv
-from langchain_chroma import Chroma
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+import os
+from langchain_community.utilities import SQLDatabase
+from langchain_community.agent_toolkits.sql.toolkit import SQLDatabaseToolkit
+from langchain_community.agent_toolkits.sql.base import create_sql_agent
+from langchain_openai import ChatOpenAI
+from database import SQLALCHEMY_DATABASE_URL
 
 load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")
-VECTOR_DB_PATH = os.getenv("VECTOR_DB_PATH")
 
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-llm = ChatOpenAI(model="gpt-4o-mini")
+db_lc = SQLDatabase.from_uri(SQLALCHEMY_DATABASE_URL)
 
+print(f"Dialect: {db_lc.dialect}")
+print(f"Available tables: {db_lc.get_usable_table_names()}")
 
-def get_vector_store():
-    return Chroma(embedding_function=embeddings, persist_directory=VECTOR_DB_PATH)
+llm = ChatOpenAI(
+    model="gpt-4o-mini",
+    api_key=os.getenv("OPENAI_API_KEY"),
+    temperature=0,
+)
 
+toolkit = SQLDatabaseToolkit(db=db_lc, llm=llm)
 
-def clear_vector_store():
-    if os.path.exists(VECTOR_DB_PATH):
-        shutil.rmtree(VECTOR_DB_PATH)
-
-
-def add_texts_to_vector_store(texts, metadatas):
-    store = get_vector_store()
-    store.add_texts(texts=texts, metadatas=metadatas)
+agent = create_sql_agent(llm=llm, toolkit=toolkit, verbose=True)
 
 
-def query_vector_store(question, k=3):
-    store = get_vector_store()
-    retriever = store.as_retriever(search_kwargs={"k": k})
-    return retriever.invoke(question)
-
-
-def generate_answer(context, question):
-    prompt = f"""
-    Eres un asistente experto. Responde usando únicamente el siguiente contexto.
-
-    === CONTEXTO ===
-    {context}
-
-    === PREGUNTA ===
-    {question}
-
-    Si la respuesta no está en el contexto, di: "No tengo información suficiente".
-    """
-    response = llm.invoke(prompt)
-    return response.content
+def generate_response(question: str):
+    try:
+        result = agent.run(question)
+        return {"response": result}
+    except Exception as e:
+        return {"error": str(e)}

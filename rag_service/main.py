@@ -1,10 +1,6 @@
 from fastapi import FastAPI
-from database import get_db
-from services.rag_service import ingest_data
-from sqlalchemy.orm import Session
 from routes import rag_routes
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 
 app = FastAPI()
 

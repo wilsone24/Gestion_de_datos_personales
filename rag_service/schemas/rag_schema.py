@@ -1,3 +1,3 @@
 from pydantic import BaseModel
-class QuerySchema(BaseModel):
+class QueryRequest(BaseModel):
     question: str

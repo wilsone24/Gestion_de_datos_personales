@@ -7,5 +7,6 @@ CREATE TABLE
         document_number VARCHAR(10) NOT NULL,
         log_type VARCHAR(50) NOT NULL,
         description VARCHAR(255) NOT NULL,
-        log_date DATETIME NOT NULL
+        log_date DATETIME NOT NULL,
+        log_user VARCHAR(100) NOT NULL
     );

@@ -1,21 +1,19 @@
-from datetime import date, datetime
+from datetime import date
 import re
 
 
 def _validate_document_type(document_type):
     valid_document_types = ["Tarjeta de identidad", "Cédula"]
-    dt = (document_type or "").strip()
-    if dt not in valid_document_types:
+    if document_type not in valid_document_types:
         raise ValueError(
             f"El tipo de documento debe ser uno de: {', '.join(valid_document_types)}."
         )
 
 
 def _validate_document_number(document_number):
-    dn = (document_number or "").strip()
-    if not dn.isdigit():
+    if not document_number.isdigit():
         raise ValueError("El número de documento debe contener solo números.")
-    if len(dn) > 10:
+    if len(document_number) > 10:
         raise ValueError("El número de documento no puede tener más de 10 caracteres.")
 
 
@@ -40,7 +38,7 @@ def _validate_birth_date(birth_date):
 
 
 def _validate_gender(gender):
-    valid_genders = ["Masculino", "Femenino", "No binario", "Prefiero no reportar"]
+    valid_genders = ["Masculino", "femenino", "No binario", "Prefiero no reportar"]
     g = (gender or "").strip()
     if g not in valid_genders:
         raise ValueError(f"El género debe ser uno de: {', '.join(valid_genders)}.")

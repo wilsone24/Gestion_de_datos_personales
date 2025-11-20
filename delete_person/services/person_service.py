@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from models.person_model import Person
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
+from datetime import timedelta, datetime, timezone
 
 LOGS_SERVICE_URL = os.getenv("LOGS_SERVICE_URL")
 
@@ -26,7 +27,8 @@ def delete_person(df: Session, id_person: int):
             "document_number": person.document_number,
             "log_type": "Delete Person",
             "description": f"Se eliminó una persona: {person.first_name} {person.last_name}",
-            "log_date": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "log_date": (datetime.now(timezone.utc) - timedelta(hours=5)).isoformat(),
+            "log_user": "system",
         }
 
         if LOGS_SERVICE_URL:

@@ -119,6 +119,29 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  auth_service:
+    depends_on:
+      mysql:
+        condition: service_healthy
+      log_service:
+        condition: service_started
+    container_name: auth_service
+    build: ./auth_service/
+    restart: unless-stopped
+    volumes:
+      - ./auth_service:/app
+    ports:
+      - "8004:8004"
+    env_file:
+      - ./auth_service/.env
+    networks:
+      - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   config_service:
     depends_on:
       mysql:

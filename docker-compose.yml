@@ -5,6 +5,12 @@ services:
     build: ./mysql/
     ports:
       - "3306:3306"
+    command:
+      [
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+        "--skip-character-set-client-handshake",
+      ]
     volumes:
       - ./mysql/db:/docker-entrypoint-initdb.d
       - mysql_data:/var/lib/mysql
@@ -12,6 +18,11 @@ services:
       - ./mysql/.env
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
     logging:
       driver: "json-file"
       options:
@@ -20,7 +31,8 @@ services:
 
   log_service:
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     container_name: log_service
     build: ./log_service/
     restart: unless-stopped
@@ -40,8 +52,10 @@ services:
 
   create_person:
     depends_on:
-      - mysql
-      - log_service
+      mysql:
+        condition: service_healthy
+      log_service:
+        condition: service_started
     container_name: create_person
     build: ./create_person/
     restart: unless-stopped
@@ -61,8 +75,10 @@ services:
 
   delete_person:
     depends_on:
-      - mysql
-      - log_service
+      mysql:
+        condition: service_healthy
+      log_service:
+        condition: service_started
     container_name: delete_person
     build: ./delete_person/
     restart: unless-stopped
@@ -82,8 +98,10 @@ services:
 
   get_person:
     depends_on:
-      - mysql
-      - log_service
+      mysql:
+        condition: service_healthy
+      log_service:
+        condition: service_started
     container_name: get_person
     build: ./get_person/
     restart: unless-stopped
@@ -103,8 +121,10 @@ services:
 
   config_service:
     depends_on:
-      - mysql
-      - log_service
+      mysql:
+        condition: service_healthy
+      log_service:
+        condition: service_started
     container_name: config_service
     build: ./config_service/
     restart: unless-stopped
@@ -125,8 +145,10 @@ services:
 
   rag_service:
     depends_on:
-      - mysql
-      - log_service
+      mysql:
+        condition: service_healthy
+      log_service:
+        condition: service_started
     container_name: rag_service
     build: ./rag_service/
     restart: unless-stopped

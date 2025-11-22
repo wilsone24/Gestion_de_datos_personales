@@ -1,7 +1,6 @@
 # Entornos virtuales
 venv/
-.env
-
+*.env
 # Archivos compilados de Python en cualquier carpeta
 __pycache__/
 **/__pycache__/

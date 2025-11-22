@@ -4,11 +4,14 @@ from database import get_db
 from controllers.person_controller import create_person_controller
 from schemas.person_schema import PersonRequest, PersonResponse
 from fastapi import File, UploadFile
+from utils.auth_dep import get_current_user
 
 router = APIRouter()
 
 
-@router.post("/create", response_model=PersonResponse)
+@router.post(
+    "/create", response_model=PersonResponse, dependencies=[Depends(get_current_user)]
+)
 async def create_person(
     document_type: str = Form(...),
     document_number: str = Form(...),

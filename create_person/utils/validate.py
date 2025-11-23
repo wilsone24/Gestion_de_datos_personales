@@ -38,7 +38,7 @@ def _validate_birth_date(birth_date):
 
 
 def _validate_gender(gender):
-    valid_genders = ["Masculino", "femenino", "No binario", "Prefiero no reportar"]
+    valid_genders = ["Masculino", "Femenino", "No binario", "Prefiero no reportar"]
     g = (gender or "").strip()
     if g not in valid_genders:
         raise ValueError(f"El género debe ser uno de: {', '.join(valid_genders)}.")

@@ -5,11 +5,9 @@ from sqlalchemy.orm import Session
 from models.person_model import Person
 from schemas.person_schema import PersonRequest
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import HTTPException, status, UploadFile
+from fastapi import HTTPException, status
 from utils.validate import validate_person_data
-from utils.load_photo import process_photo
 from datetime import timedelta, datetime, timezone
-from utils.load_photo import remove_photo
 
 LOGS_SERVICE_URL = os.getenv(
     "LOGS_SERVICE_URL",
@@ -48,17 +46,6 @@ def _check_uniqueness(db: Session, data: PersonRequest, person: Person):
             )
 
 
-def _process_and_set_photo(person: Person, photo: UploadFile | None):
-    if not photo:
-        return
-    new_photo_url = process_photo(photo)
-    try:
-        remove_photo(person.photo_url)
-    except Exception:
-        pass
-    person.photo_url = new_photo_url
-
-
 def _send_update_log(person: Person):
     log_data = {
         "document_type": person.document_type,
@@ -77,9 +64,7 @@ def _send_update_log(person: Person):
         print(f"[WARN] No se pudo registrar el log: {e}")
 
 
-def update_person(
-    db: Session, id_person: int, data: PersonRequest, photo: UploadFile | None
-):
+def update_person(db: Session, id_person: int, data: PersonRequest):
     _validate_update(data)
 
     person = db.query(Person).filter(Person.id_person == id_person).first()
@@ -88,7 +73,6 @@ def update_person(
             status_code=status.HTTP_404_NOT_FOUND, detail="Persona no encontrada."
         )
     _check_uniqueness(db, data, person)
-    _process_and_set_photo(person, photo)
     update_fields = data.dict(exclude_unset=True)
     for key, value in update_fields.items():
         setattr(person, key, value)
@@ -97,9 +81,7 @@ def update_person(
         db.add(person)
         db.commit()
         db.refresh(person)
-
         _send_update_log(person)
-
         return person
 
     except SQLAlchemyError as e:

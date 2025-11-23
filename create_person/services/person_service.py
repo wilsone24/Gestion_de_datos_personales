@@ -7,7 +7,6 @@ from schemas.person_schema import PersonRequest
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException, status, UploadFile
 from utils.validate import validate_person_data
-from utils.load_photo import process_photo
 from datetime import timedelta, datetime, timezone
 
 LOGS_SERVICE_URL = os.getenv(
@@ -15,7 +14,7 @@ LOGS_SERVICE_URL = os.getenv(
 )
 
 
-def create_person(db: Session, data: PersonRequest, photo: UploadFile | None):
+def create_person(db: Session, data: PersonRequest):
     try:
         validate_person_data(data.dict())
     except ValueError as e:
@@ -23,8 +22,6 @@ def create_person(db: Session, data: PersonRequest, photo: UploadFile | None):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=[{"msg": str(e)}],
         )
-
-    photo_url = process_photo(photo) if photo else None
 
     existing_person = (
         db.query(Person).filter(Person.document_number == data.document_number).first()
@@ -53,7 +50,7 @@ def create_person(db: Session, data: PersonRequest, photo: UploadFile | None):
         gender=data.gender,
         email=data.email,
         phone_number=data.phone_number,
-        photo_url=photo_url,
+        photo_url="photo_url",
     )
 
     try:

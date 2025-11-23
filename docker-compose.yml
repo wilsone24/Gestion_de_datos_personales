@@ -188,6 +188,29 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+  
+  update_person:
+    depends_on:
+      mysql:
+        condition: service_healthy
+      log_service:
+        condition: service_started
+    container_name: update_person
+    build: ./update_person/
+    restart: unless-stopped
+    volumes:
+      - ./update_person:/app
+    ports:
+      - "8007:8007"
+    env_file:
+      - ./update_person/.env
+    networks:
+      - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   mysql_data:
